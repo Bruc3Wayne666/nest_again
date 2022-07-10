@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/mongoose";
 import {User, UserDocument} from "@src/user/user.model";
 import {Model} from "mongoose";
@@ -28,13 +28,17 @@ export class UserService {
     }
 
     async removePost(id: string, userId: string): Promise<User> {
-        return this.userModel.findByIdAndUpdate(userId, {
-            $pull: {
-                posts: {
-                    _id: id
+        try {
+            return this.userModel.findByIdAndUpdate(userId, {
+                $pull: {
+                    posts: {
+                        _id: id
+                    }
                 }
-            }
-        })
+            })
+        } catch (e) {
+            throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async getByEmail(email: string): Promise<User> {

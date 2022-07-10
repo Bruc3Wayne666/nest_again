@@ -3,7 +3,6 @@ import {UserController} from './user.controller';
 import {UserService} from './user.service';
 import {MongooseModule} from "@nestjs/mongoose";
 import {User, UserSchema} from "@src/user/user.model";
-import {JwtService} from "@nestjs/jwt";
 import {Post, PostSchema} from "@src/post/post.model";
 
 @Module({
@@ -17,5 +16,4 @@ import {Post, PostSchema} from "@src/post/post.model";
     providers: [UserService],
     exports: [UserService]
 })
-export class UserModule {
-}
+export class UserModule {}

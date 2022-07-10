@@ -5,9 +5,11 @@ import {PostService} from "@src/post/post.service";
 import {PostController} from "@src/post/post.controller";
 import {UserModule} from "@src/user/user.module";
 import {JwtService} from "@nestjs/jwt";
+import {FileModule} from "@src/file/file.module";
 
 @Module({
     imports: [
+        FileModule,
         UserModule,
         MongooseModule.forFeature([{name: Post.name, schema: PostSchema}])
     ],
