@@ -16,35 +16,51 @@ export class PostService {
     }
 
     async create(file: Express.Multer.File, createPostDto: CreatePostDto, author: string): Promise<Post> {
-        let upload
-        if (file) {
-            upload = await this.fileService.uploadImage(file)
-                .catch(() => {
-                    throw new BadRequestException('Invalid file type.')
-                })
+        try {
+            let upload
+            if (file) {
+                upload = await this.fileService.uploadImage(file)
+                    .catch(() => {
+                        throw new BadRequestException('Invalid file type.')
+                    })
+            }
+            const newPost = await new this.postModel({...createPostDto, author, image_url: upload && upload.secure_url}).save()
+            await this.userService.addPost(author, newPost)
+            return newPost
+        } catch (e) {
+            throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        const newPost = await new this.postModel({...createPostDto, author, image_url: upload && upload.secure_url}).save()
-        await this.userService.addPost(author, newPost)
-        return newPost
     }
 
     async getAll(): Promise<Post[]> {
-        return this.postModel.find().populate('author')
+        try {
+            return this.postModel.find().populate('author')
+        } catch (e) {
+            throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async getOne(id: string): Promise<Post> {
-        return this.postModel.findById(id).populate('author')
+        try {
+            return this.postModel.findById(id).populate('author')
+        } catch (e) {
+            throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async update(file: Express.Multer.File, updatePostDto: CreatePostDto, id: string): Promise<Post> {
-        let upload
-        if (file) {
-            upload = await this.fileService.uploadImage(file)
-                .catch(() => {
-                    throw new BadRequestException('Invalid file type.')
-                })
+        try {
+            let upload
+            if (file) {
+                upload = await this.fileService.uploadImage(file)
+                    .catch(() => {
+                        throw new BadRequestException('Invalid file type.')
+                    })
+            }
+            return this.postModel.findByIdAndUpdate(id, {...updatePostDto, image_url: upload && upload.secure_url})
+        } catch (e) {
+            throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        return this.postModel.findByIdAndUpdate(id, {...updatePostDto, image_url: upload && upload.secure_url})
     }
 
     async delete(id: string, userId: string): Promise<Post> {
