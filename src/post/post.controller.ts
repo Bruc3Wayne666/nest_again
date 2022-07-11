@@ -30,6 +30,12 @@ export class PostController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get()
+    getAll(): Promise<PostItem[]> {
+        return this.postService.getAll()
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get(':id')
     getOne(@Param('id') id: string): Promise<PostItem> {
         return this.postService.getOne(id)

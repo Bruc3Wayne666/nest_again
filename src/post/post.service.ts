@@ -28,8 +28,12 @@ export class PostService {
         return newPost
     }
 
+    async getAll(): Promise<Post[]> {
+        return this.postModel.find().populate('author')
+    }
+
     async getOne(id: string): Promise<Post> {
-        return this.postModel.findById(id)
+        return this.postModel.findById(id).populate('author')
     }
 
     async update(file: Express.Multer.File, updatePostDto: CreatePostDto, id: string): Promise<Post> {
