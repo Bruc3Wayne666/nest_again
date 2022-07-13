@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import {MongooseModule} from "@nestjs/mongoose";
 import {Post, PostSchema} from "@src/post/post.model";
 import {PostService} from "@src/post/post.service";
@@ -10,10 +10,11 @@ import {FileModule} from "@src/file/file.module";
 @Module({
     imports: [
         FileModule,
-        UserModule,
+        forwardRef(() => UserModule),
         MongooseModule.forFeature([{name: Post.name, schema: PostSchema}])
     ],
     providers: [PostService, JwtService],
-    controllers: [PostController]
+    controllers: [PostController],
+    exports: [PostService]
 })
 export class PostModule {}

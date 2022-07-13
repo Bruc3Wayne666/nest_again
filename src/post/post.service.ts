@@ -48,6 +48,14 @@ export class PostService {
         }
     }
 
+    async getByUser(id: string): Promise<Post[]>{
+        try {
+            return this.postModel.find({author: id})
+        } catch (e) {
+            throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
     async update(file: Express.Multer.File, updatePostDto: CreatePostDto, id: string): Promise<Post> {
         try {
             let upload

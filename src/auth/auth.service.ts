@@ -13,17 +13,19 @@ export class AuthService {
         private jwtService: JwtService
     ) {}
 
-    async register(createUserDto: CreateUserDto): Promise<string> {
+    async register(createUserDto: CreateUserDto): Promise<{token: string, user: User}> {
         const candidate = await this.userService.getByEmail(createUserDto.email)
         if (candidate) throw new HttpException('User already exists', HttpStatus.BAD_REQUEST)
         const hashedPassword = await bcrypt.hash(createUserDto.password, 2)
         const user = await this.userService.createUser({...createUserDto, password: hashedPassword})
-        return this.generateToken(user)
+        const token = await this.generateToken(user)
+        return {token, user}
     }
 
-    async login(loginUserDto: LoginUserDto): Promise<string> {
+    async login(loginUserDto: LoginUserDto): Promise<{token: string, user: User}> {
         const user = await this.validateLogin(loginUserDto)
-        return this.generateToken(user)
+        const token = await this.generateToken(user)
+        return {token, user}
     }
 
     private async generateToken(user: User): Promise<string> {
